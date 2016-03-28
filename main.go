@@ -13,6 +13,7 @@ func main() {
 	app.Main(func(a app.App) {
 		var glctx gl.Context
 		var sz size.Event
+		init := false
 		for e := range a.Events() {
 			switch e := a.Filter(e).(type) {
 			case lifecycle.Event:
@@ -28,9 +29,10 @@ func main() {
 			case size.Event:
 				if glctx != nil {
 					on_surface_changed(glctx, &sz)
+					init = true
 				}
 			case paint.Event:
-				if glctx == nil || e.External {
+				if !init || e.External {
 					// As we are actively painting as fast as
 					// we can (usually 60 FPS), skip any paint
 					// events sent by the system.
@@ -41,7 +43,7 @@ func main() {
 				a.Publish()
 				// Drive the animation by preparing to paint the next frame
 				// after this one is shown.
-				a.Send(paint.Event{})
+				//a.Send(paint.Event{})
 			}
 		}
 	})
