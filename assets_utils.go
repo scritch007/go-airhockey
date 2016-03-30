@@ -43,11 +43,7 @@ func load_png_asset_into_texture(glctx gl.Context, texture_path string) (*gl.Tex
 		return nil, tools.LogError("This wasn't an RGBA image")
 	}
 
-	tools.LOG_DEBUG.Printf("Dx = > %d\n", m.Bounds().Dx())
-	tools.LOG_DEBUG.Printf("Dy = > %d\n", m.Bounds().Dy())
-
 	return load_texture(glctx, m.Bounds().Dx(), m.Bounds().Dy(), gl.RGBA, rgbImage.Pix), nil
-
 }
 
 func build_program_from_assets(glctx gl.Context, vertex_shader_path string, fragment_shader_path string) (*gl.Program, error) {

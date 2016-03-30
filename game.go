@@ -60,11 +60,12 @@ func on_surface_created(glctx gl.Context) {
 		tools.LOG_ERROR.Printf("Failed to create table ", err)
 		return
 	}
+
 	puck_color := [4]float32{0.8, 0.8, 1.0, 1.0}
 	red := [4]float32{1.0, 0.0, 0.0, 1.0}
 	blue := [4]float32{0.0, 0.0, 1.0, 1.0}
 
-	puck, err = create_puck(glctx, 0.6, puck_height, 32, puck_color)
+	puck, err = create_puck(glctx, 0.06, puck_height, 32, puck_color)
 	if nil != err {
 		tools.LOG_ERROR.Printf("Failed to create puck ", err)
 		return
@@ -79,6 +80,7 @@ func on_surface_created(glctx gl.Context) {
 		tools.LOG_ERROR.Printf("Failed to create blue allet ", err)
 		return
 	}
+
 	program, err := build_program_from_assets(glctx, "shaders/texture_shader.vsh", "shaders/texture_shader.fsh")
 	if nil != err {
 		tools.LOG_ERROR.Printf("Failed to create texture Program ", err)
@@ -102,11 +104,22 @@ void on_surface_changed(int width, int height) {
 }
 */
 
-func on_surface_changed(glctx gl.Context, sz *size.Event) {
+func on_surface_changed(glctx gl.Context, sz *size.Event) bool {
+
+	tools.LOG_DEBUG.Printf("%s\n", *sz)
+	if sz.WidthPx == 0 {
+		tools.LOG_ERROR.Println("Invalid Width")
+		return false
+	}
+	if sz.HeightPx == 0 {
+		tools.LOG_ERROR.Println("Invalid Height")
+		return false
+	}
 	glctx.Viewport(0, 0, sz.WidthPx, sz.HeightPx)
 	projection_matrix = mat4x4_perspective(45, float32(float32(sz.WidthPx)/float32(sz.HeightPx)), 1.0, 10.0)
 	view_matrix = mat4x4_look_at(0.0, 1.2, 2.2, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0)
 
+	return true
 }
 
 func onStop(glctx gl.Context) {
@@ -136,18 +149,28 @@ void on_draw_frame() {
 */
 func on_draw_frame(glctx gl.Context, sz *size.Event) {
 	glctx.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
+	//tools.LOG_DEBUG.Printf("projection %s", *projection_matrix)
+	//tools.LOG_DEBUG.Printf("view %s", *view_matrix)
 	view_project_matrix = mat4x4_mul(projection_matrix, view_matrix)
 
 	position_table_in_scene(glctx)
+
+	//tools.LOG_DEBUG.Printf("model view %s", *model_view_projection_matrix)
+
+	//model_view_projection_matrix = mat4.Identity()
 	draw_table(glctx, table, texture_program, model_view_projection_matrix)
 
 	position_object_in_scene(glctx, 0.0, mallet_height/2.0, -0.4)
+	//model_view_projection_matrix = mat4.Identity()
 	draw_mallet(glctx, red_mallet, color_program, model_view_projection_matrix)
 
 	position_object_in_scene(glctx, 0.0, mallet_height/2.0, 0.4)
+	//model_view_projection_matrix = mat4.Identity()
 	draw_mallet(glctx, blue_mallet, color_program, model_view_projection_matrix)
 
 	position_object_in_scene(glctx, 0.0, puck_height/2.0, 0.0)
+	//model_view_projection_matrix = mat4.Identity()
 	draw_puck(glctx, puck, color_program, model_view_projection_matrix)
 
 }

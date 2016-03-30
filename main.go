@@ -28,8 +28,10 @@ func main() {
 				}
 			case size.Event:
 				if glctx != nil {
-					on_surface_changed(glctx, &sz)
-					init = true
+					tmp := on_surface_changed(glctx, &e)
+					if tmp {
+						init = true
+					}
 				}
 			case paint.Event:
 				if !init || e.External {
@@ -43,7 +45,7 @@ func main() {
 				a.Publish()
 				// Drive the animation by preparing to paint the next frame
 				// after this one is shown.
-				//a.Send(paint.Event{})
+				a.Send(paint.Event{})
 			}
 		}
 	})
