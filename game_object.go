@@ -7,7 +7,7 @@ import (
 	"golang.org/x/mobile/exp/f32"
 	"golang.org/x/mobile/gl"
 
-	"github.com/rkusa/gm/mat4"
+	"github.com/scritch007/gm/mat4"
 )
 
 /*

@@ -3,8 +3,9 @@ package main
 import (
 	_ "math"
 
-	"github.com/rkusa/gm/mat4"
-	"github.com/rkusa/gm/vec3"
+	"github.com/scritch007/gm/mat4"
+	"github.com/scritch007/gm/vec3"
+
 	_ "github.com/scritch007/go-tools"
 )
 

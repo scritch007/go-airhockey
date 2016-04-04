@@ -5,7 +5,10 @@ import (
 	"golang.org/x/mobile/event/lifecycle"
 	"golang.org/x/mobile/event/paint"
 	"golang.org/x/mobile/event/size"
+	"golang.org/x/mobile/event/touch"
 	"golang.org/x/mobile/gl"
+
+	_ "github.com/scritch007/go-tools"
 )
 
 func main() {
@@ -30,6 +33,7 @@ func main() {
 				if glctx != nil {
 					tmp := on_surface_changed(glctx, &e)
 					if tmp {
+						sz = e
 						init = true
 					}
 				}
@@ -46,6 +50,17 @@ func main() {
 				// Drive the animation by preparing to paint the next frame
 				// after this one is shown.
 				a.Send(paint.Event{})
+			case touch.Event:
+				normalized_x := (e.X/float32(sz.WidthPx))*2.0 - 1.0
+				normalized_y := -((e.Y/float32(sz.HeightPx))*2.0 - 1.0)
+				//normalized_x := e.X
+				//normalized_y := e.Y
+				//tools.LOG_DEBUG.Printf("Received %f %f\n", normalized_x, normalized_y)
+				if e.Type == touch.TypeBegin {
+					on_touch_press(glctx, normalized_x, normalized_y)
+				} else if e.Type == touch.TypeMove {
+					on_touch_drag(glctx, normalized_x, normalized_y)
+				}
 			}
 		}
 	})
